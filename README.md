@@ -6,7 +6,7 @@ to the most common types of graph by avoiding boilerplate code. Graphs are
 esthetic, efficiently rendered, interactive and sharable.
 
 
-#Guiding principles
+# Guiding principles
 * Made simple
 
 While Bokeh, Matplotlib, Dash and many others provide a tremendous flexibility,
