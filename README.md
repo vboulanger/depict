@@ -1,2 +1,2 @@
-# draw
+# depict
 Insightful plots in seconds
