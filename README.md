@@ -43,7 +43,7 @@ interact with depict figure and get access to a fine level of granularity.
     
     Inside the depict folder, install the package
     
-    ```
+  ```
   cd depict  
   sudo python setup.py install
   ```
