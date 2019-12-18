@@ -40,7 +40,7 @@ interact with depict figure and get access to a fine level of granularity.
     Clone the git repository
      
     `git clone https://github.com/vboulanger/depict.git`
-    
+   
     Inside the depict folder, install the package
     
   ```
