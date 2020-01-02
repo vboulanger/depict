@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="depict", # Replace with your own username
-    version="0.0.2",
+    version="0.0.3",
     author="Victor Boulanger",
     author_email="vb@live.fr",
-    description="Insightful plots in seconds",
+    description="Business grade plots in seconds",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/vboulanger/depict",
