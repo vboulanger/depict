@@ -1,5 +1,5 @@
-from core.session import Session
-from core.line import line
+from .core.session import Session
+from .core.line import line
 
 
 SESSION = None
