@@ -1,7 +1,14 @@
-import bokeh
+from core.session import Session
+from core.line import line
 
-from bokeh.plotting import figure
-from bokeh.io import show
 
-def f():
-    print('Test')
+SESSION = None
+
+
+def session(width=300, height=300, jupyter_notebook=False):
+    global SESSION
+    SESSION = Session(width=300, height=300, jupyter_notebook=False)
+
+def get_session():
+    global SESSION
+    return SESSION
