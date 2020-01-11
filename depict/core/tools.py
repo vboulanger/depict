@@ -1,15 +1,28 @@
 from .plot import Plot
 
+from bokeh.embed import file_html
 from bokeh.layouts import column, row
 from bokeh.models.widgets import Div
 from bokeh.plotting import show as show_bokeh
+from bokeh.resources import CDN
 import numpy as np
 
 
-def show(plot, width_total_as_session=False):
+def _make_plot(plot, width_total_as_session, share_x, share_y):
     # TODO: Check the shape first, the types etc
     def build_plot(plot, width=None):
+        global x_range, y_range
         fig = plot.make_figure()
+        if share_x:
+            try:
+                fig.x_range = x_range
+            except NameError:
+                x_range = fig.x_range
+        if share_y:
+            try:
+                fig.y_range = y_range
+            except NameError:
+                y_range = fig.y_range
         if width:
             fig.width = width
         if not plot.grid_visible:
@@ -25,9 +38,9 @@ def show(plot, width_total_as_session=False):
 
     if isinstance(plot, Plot):
         if width_total_as_session:
-            show_bokeh(build_plot(plot=plot, width=plot.width_session))
+            return build_plot(plot=plot, width=plot.width_session)
         else:
-            show_bokeh(build_plot(plot))
+            return build_plot(plot)
     elif isinstance(plot, (list, np.ndarray)):
         row_all = []
         for p_1 in plot:
@@ -43,4 +56,66 @@ def show(plot, width_total_as_session=False):
                         row([build_plot(pp, width=fig_width) for pp in p_1]))
                 else:
                     row_all.append(row([build_plot(pp) for pp in p_1]))
-        show_bokeh(column(row_all))
+        return column(row_all)
+
+def show_base(plot, width_total_as_session=False, share_x=False, share_y=False):
+    show_bokeh(_make_plot(plot=plot,
+                          width_total_as_session=width_total_as_session,
+                          share_x=share_x, share_y=share_y))
+
+def _update_show_default_args(show_base, session):
+    def show_updated(plot,
+                     width_total_as_session=session.width_total_as_session,
+                     share_x=False, share_y=False):
+        show_base(plot=plot, width_total_as_session=width_total_as_session,
+                  share_x=share_x, share_y=share_y)
+    return show_updated
+
+def _update_save_default_args(save_base, session):
+    def save_updated(plot, save_path=session.save_path,
+                     file_exists_mode=session.file_exists_mode,
+                     width_total_as_session=session.width_total_as_session,
+                     share_x=False, share_y=False):
+        save_base(plot=plot, save_path=save_path,
+                  file_exists_mode=file_exists_mode,
+                  width_total_as_session=width_total_as_session,
+                  share_x=share_x, share_y=share_y)
+    return save_updated
+
+def save_base(plot, save_path, file_exists_mode, width_total_as_session,
+              share_x, share_y):
+
+    if not save_path:
+        # TODO: Add warning
+        return None
+
+    plot_made = _make_plot(plot, width_total_as_session=width_total_as_session,
+                           share_x=share_x, share_y=share_y)
+    html = file_html(plot_made, CDN)
+
+    if not save_path.endswith('.html'):
+        save_path += '.html'
+    if file_exists_mode.lower() == 'append':
+        with open(file=save_path, mode='a',) as f:
+            f.write(html)
+    elif file_exists_mode.lower() == 'overwrite':
+        with open(file=save_path, mode='w',) as f:
+            f.write(html)
+
+
+def is_color(c):
+    if isinstance(c, str):
+        return True
+    if isinstance(c, (list, np.ndarray, tuple)) and (
+            len(c) == 3) and isinstance(c[0], (float, int)):
+        return True
+    return False
+
+
+def format_color(col):
+    if isinstance(col, (list, np.ndarray, tuple)) and all(
+            [isinstance(c_i, (float, int)) for c_i in col]) and (
+            0 <= np.min(col) <= np.max(col) <= 1) and (len(col) == 3):
+        return (int(255 * col[0]), int(255 * col[1]), int(255 * col[2]))
+    else:
+        return col
