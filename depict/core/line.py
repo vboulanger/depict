@@ -7,8 +7,9 @@ from bokeh.models import ColorBar, LinearColorMapper
 import numpy as np
 
 
-def line_base(y, x, width, height, description, title, show_plot, color,
-              colorbar_type, legend, grid_visible, session, save_path):
+def line_base(y, x, width, height, description, title, x_label, y_label,
+              show_plot, color, colorbar_type, legend, line_width, alpha, style, grid_visible,
+              session, save_path):
     """ One dimensional plot
 
     Args:
@@ -61,7 +62,8 @@ def line_base(y, x, width, height, description, title, show_plot, color,
             else:
                 # TODO: Improve error message
                 raise ValueError('Number of elements in `color` invalid')
-        elif isinstance(color, (list, np.ndarray, tuple)) and isinstance(color[0], (float, int)):
+        elif isinstance(color, (list, np.ndarray, tuple)) and isinstance(
+                color[0], (float, int)):
             if len(color) != len(y):
                 # TODO: Improve error message
                 raise ValueError('Number of elements in `color` invalid')
@@ -73,7 +75,8 @@ def line_base(y, x, width, height, description, title, show_plot, color,
                 _add_color_bar = True
 
             if colorbar_type.lower() == 'auto':
-                if ((len(np.unique(color)) / len(color)) <= 0.5) and (len(np.unique(color) < 9)):
+                if ((len(np.unique(color)) / len(color)) <= 0.5) and (
+                len(np.unique(color) < 9)):
                     # Data are considered categorical
                     colorbar_type = 'categorical'
                 else:
@@ -98,6 +101,8 @@ def line_base(y, x, width, height, description, title, show_plot, color,
                 color = np.array(color)
                 col_indexes = (color - color.min()) / (
                             (color.max() - color.min()) / (256 - 1))
+                color_min = np.min(color)
+                color_max = np.max(color)
                 color = [palette_colors[int(ci)] for ci in col_indexes]
                 if _add_color_bar:
                     color_bar = ColorBar(color_mapper=color_mapper,
@@ -117,30 +122,85 @@ def line_base(y, x, width, height, description, title, show_plot, color,
             raise ValueError('The number of elements in `legend` is not '
                              'consistent with the data')
 
+    # We pre-process `line_width`
+    if isinstance(line_width, (float, int)):
+        line_width = [line_width for _ in y]
+    elif isinstance(line_width, (list, np.ndarray, tuple)):
+        if len(line_width) != len(y):
+            raise ValueError('The line_width argument given is non consistent '
+                             'with the data')
+
+    # We pre-process `alpha`
+    if isinstance(alpha, (float, int)):
+        alpha = [alpha for _ in y]
+    elif isinstance(alpha, (list, np.ndarray, tuple)):
+        if len(alpha) != len(y):
+            raise ValueError(
+                'The alpha argument given is non consistent '
+                'with the data')
+
+    # We pre-process `style`
+    if isinstance(style, str):
+        style = [style.lower() for _ in y]
+    elif isinstance(style, (list, np.ndarray, tuple)):
+        if len(style) != len(y):
+            raise ValueError(
+                'The style argument given is non consistent '
+                'with the data')
+        style = [s.lower() for s in style]
+
+    def guess_style(style):
+        # This list is to be completted to match as much as possible with
+        # Matplotlib equivalent attribute
+        if style in ['-', '--', '---']:
+            return 'dashed'
+        elif style in ['.', '..', '...']:
+            return 'dotted'
+        elif style == '.-':
+            return 'dotdash'
+        elif style == '-.':
+            return 'dashdot'
+        else:
+            return style
+    style = [guess_style(s) for s in style]
+
     if add_legend:
         steps = [
-            (lambda f, x_copy=x_i, y_copy=y_i, col_c=col_i, leg_c=leg_i: f.line(
+            (lambda f, x_copy=x_i, y_copy=y_i, col_c=col_i, leg_c=leg_i,
+                    lw_c=lw_i, a_c=a_i, s_c=s_i: f.line(
                 x=x_copy,
                 y=y_copy,
-                color=col_c, legend_label=leg_c))
-            for (x_i, y_i, col_i, leg_i) in zip(x, y, color, legend)]
+                color=col_c, legend_label=leg_c, line_width=lw_c, alpha=a_c, line_dash=s_c))
+            for (x_i, y_i, col_i, leg_i, lw_i, a_i, s_i) in
+            zip(x, y, color, legend, line_width, alpha, style)]
+
+        def make_legend_interactive(f):
+            f.legend.click_policy = "hide"
+        steps.append(make_legend_interactive)
     else:
         steps = [
-            (lambda f, x_copy=x_i, y_copy=y_i, col_c=col_i: f.line(
+            (lambda f, x_copy=x_i, y_copy=y_i, col_c=col_i, lw_c=lw_i,
+                    a_c=a_i, s_c=s_i: f.line(
                 x=x_copy,
                 y=y_copy,
-                color=col_c))
-            for (x_i, y_i, col_i) in zip(x, y, color)]
+                color=col_c, line_width=lw_c, alpha=a_c, line_dash=s_c))
+            for (x_i, y_i, col_i, lw_i, a_i, s_i) in
+            zip(x, y, color, line_width, alpha, style)]
 
     def _make_fig():
         fig = figure(width=width, height=height, title=title,
-                      background_fill_color=session.background_color)
+                     background_fill_color=session.background_color,
+                     x_axis_label=x_label, y_axis_label=y_label)
         fig.title.align = 'center'
         fig.xgrid.grid_line_dash = [8, 3, 2, 3]
         fig.ygrid.grid_line_dash = [8, 3, 2, 3]
         fig.toolbar.autohide = True
         if _color_bar_made and _add_color_bar:
-            fig.add_layout(color_bar, 'right')
+            color_mapper = LinearColorMapper(palette=palette_colors,
+                                             low=color_min,
+                                             high=color_max)
+            c_bar = ColorBar(color_mapper=color_mapper, location=(0, 0))
+            fig.add_layout(c_bar, 'right')
         return fig
 
     plot = Plot(make_figure=_make_fig, steps=steps, description=description,
@@ -160,13 +220,16 @@ def line_base(y, x, width, height, description, title, show_plot, color,
 def _update_line_default_args(line, session):
     def line_updated(y, x=None, width=session.width, height=session.height,
                      description=session.description, title=session.title,
+                     x_label=None, y_label=None,
                      show_plot=session.show_plot, color=None,
-                     colorbar_type='auto', legend='auto',
-                     save_path=session.save_path,
+                     colorbar_type='auto', legend='auto', line_width=1, alpha=1,
+                     style='solid', save_path=session.save_path,
                      grid_visible=session.grid_visible):
         plot = line(y=y, x=x, width=width, height=height,
-                    description=description, title=title, show_plot=show_plot,
-                    color=color, colorbar_type=colorbar_type, legend=legend,
+                    description=description, title=title, x_label=x_label,
+                    y_label=y_label, show_plot=show_plot, color=color,
+                    colorbar_type=colorbar_type, legend=legend,
+                    line_width=line_width, alpha=alpha, style=style,
                     grid_visible=grid_visible, session=session,
                     save_path=save_path)
         return plot

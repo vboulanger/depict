@@ -10,19 +10,19 @@ import numpy as np
 
 def _make_plot(plot, width_total_as_session, share_x, share_y):
     # TODO: Check the shape first, the types etc
-    def build_plot(plot, width=None):
-        global x_range, y_range
+    def build_plot(plot, width=None, x_range=None, y_range=None):
+        # global x_range, y_range
         fig = plot.make_figure()
         if share_x:
-            try:
-                fig.x_range = x_range
-            except NameError:
+            if x_range is None:
                 x_range = fig.x_range
+            else:
+                fig.x_range = x_range
         if share_y:
-            try:
-                fig.y_range = y_range
-            except NameError:
+            if y_range is None:
                 y_range = fig.y_range
+            else:
+                fig.y_range = y_range
         if width:
             fig.width = width
         if not plot.grid_visible:
@@ -34,28 +34,56 @@ def _make_plot(plot, width_total_as_session, share_x, share_y):
             div = Div(text=plot.description, width=width, height=None)
         else:
             div = Div(text=plot.description, width=plot.width, height=None)
-        return column(fig, div)
+        return [column(fig, div), x_range, y_range]
 
     if isinstance(plot, Plot):
         if width_total_as_session:
-            return build_plot(plot=plot, width=plot.width_session)
+            return build_plot(plot=plot, width=plot.width_session)[0]
         else:
-            return build_plot(plot)
+            return build_plot(plot)[0]
     elif isinstance(plot, (list, np.ndarray)):
+        x_range = None
+        y_range = None
         row_all = []
         for p_1 in plot:
             if isinstance(p_1, Plot):
-                if width_total_as_session:
-                    row_all.append(build_plot(p_1, width=p_1.width_session))
+                width = p_1.width_session if width_total_as_session else None
+                if x_range is None:
+                    if y_range is None:
+                        f_r, xr, yr = build_plot(p_1, width=width)
+                        x_range = xr
+                        y_range = yr
+                    else:
+                        f_r, xr, yr = build_plot(p_1, width=width, y_range=y_range)
+                        x_range = xr
                 else:
-                    row_all.append(build_plot(p_1))
+                    if y_range is None:
+                        f_r, xr, yr = build_plot(p_1, width=width, x_range=x_range)
+                        y_range = yr
+                    else:
+                        f_r = build_plot(p_1, width=width, x_range=x_range, y_range=y_range)[0]
+                row_all.append(f_r)
             elif isinstance(p_1, (list, np.ndarray)):
-                if width_total_as_session:
-                    fig_width = int(p_1[0].width_session / len(p_1))
-                    row_all.append(
-                        row([build_plot(pp, width=fig_width) for pp in p_1]))
-                else:
-                    row_all.append(row([build_plot(pp) for pp in p_1]))
+                fig_width = int(p_1[0].width_session / len(p_1))
+                width = fig_width if width_total_as_session else None
+                row_i = []
+                for pp in p_1:
+                    if x_range is None:
+                        if y_range is None:
+                            f_r, xr, yr = build_plot(pp, width=width)
+                            x_range = xr
+                            y_range = yr
+                        else:
+                            f_r, xr, yr = build_plot(pp, width=width, y_range=y_range)
+                            x_range = xr
+                    else:
+                        if y_range is None:
+                            f_r, xr, yr = build_plot(pp, width=width, x_range=x_range)
+                            y_range = yr
+                        else:
+                            f_r, xr, yr = build_plot(pp, width=width, x_range=x_range, y_range=y_range)
+                    row_i.append(f_r)
+                row_all.append(row(row_i))
         return column(row_all)
 
 def show_base(plot, width_total_as_session=False, share_x=False, share_y=False):
@@ -84,7 +112,6 @@ def _update_save_default_args(save_base, session):
 
 def save_base(plot, save_path, file_exists_mode, width_total_as_session,
               share_x, share_y):
-
     if not save_path:
         # TODO: Add warning
         return None
