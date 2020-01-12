@@ -11,7 +11,6 @@ import numpy as np
 def _make_plot(plot, width_total_as_session, share_x, share_y):
     # TODO: Check the shape first, the types etc
     def build_plot(plot, width=None, x_range=None, y_range=None):
-        # global x_range, y_range
         fig = plot.make_figure()
         if share_x:
             if x_range is None:
