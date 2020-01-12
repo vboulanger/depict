@@ -1,3 +1,4 @@
+from ..core.tools import format_color
 import seaborn as sns
 
 # TODO: Add formulas to compute palettes
@@ -277,26 +278,26 @@ _color_categories_256 = {
 
 def categories_10(nb_colors):
     if nb_colors <= 10:
-        return _colors_categories_10[nb_colors]
+        return [format_color(c) for c in _colors_categories_10[nb_colors]]
     elif nb_colors <= 256:
-        return _color_categories_256[nb_colors]
+        return [format_color(c) for c in _color_categories_256[nb_colors]]
     else:
-        return [_color_categories_256[256][i % 256] for i in range(nb_colors)]
+        return [format_color(_color_categories_256[256][i % 256]) for i in range(nb_colors)]
 
 def categories_256(nb_colors):
     if nb_colors <= 256:
-        return _color_categories_256[nb_colors]
+        return [format_color(c) for c in _color_categories_256[nb_colors]]
     else:
-        return [_color_categories_256[256][i % 256] for i in range(nb_colors)]
+        return [format_color(_color_categories_256[256][i % 256]) for i in range(nb_colors)]
 
 def linear_purple(nb_colors):
-    return sns.cubehelix_palette(nb_colors)
+    return [format_color(c) for c in sns.cubehelix_palette(nb_colors)]
 
 def linear_blue_red(nb_colors):
-    return sns.color_palette("coolwarm", nb_colors)
+    return [format_color(c) for c in sns.color_palette("coolwarm", nb_colors)]
 
 def linear_blue(nb_colors):
-    return sns.color_palette(palette="Blues", n_colors=nb_colors)
+    return [format_color(c) for c in sns.color_palette(palette="Blues", n_colors=nb_colors)]
 
 palette_from_name_to_function = {
     'categories_10': categories_10,

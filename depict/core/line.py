@@ -3,11 +3,12 @@ from .tools import show_base, save_base, is_color, format_color
 from ..tools.color_palettes import palette_from_name_to_function
 
 from bokeh.plotting import figure
+from bokeh.models import ColorBar, LinearColorMapper
 import numpy as np
 
 
 def line_base(y, x, width, height, description, title, show_plot, color,
-              grid_visible, session, save_path):
+              colorbar_type, legend, grid_visible, session, save_path):
     """ One dimensional plot
 
     Args:
@@ -32,6 +33,7 @@ def line_base(y, x, width, height, description, title, show_plot, color,
             y = [y for _ in x]
 
     # We pre-process `color`
+    _color_bar_made = False
     if not color:
         nb_color_needed = len(y)
         color = palette_from_name_to_function[session.palette_name](
@@ -59,21 +61,76 @@ def line_base(y, x, width, height, description, title, show_plot, color,
             else:
                 # TODO: Improve error message
                 raise ValueError('Number of elements in `color` invalid')
-        elif isinstance(color, (list, np.ndarray, tuple)) and (
-        not is_color(color[0])):
-            color_unique = list(np.unique(color))
-            nb_color_needed = len(color_unique)
-            palette_colors = palette_from_name_to_function[
-                session.palette_name](nb_color_needed)
-            color = [palette_colors[color_unique.index(c)] for c in color]
+        elif isinstance(color, (list, np.ndarray, tuple)) and isinstance(color[0], (float, int)):
+            if len(color) != len(y):
+                # TODO: Improve error message
+                raise ValueError('Number of elements in `color` invalid')
+
+            if not colorbar_type:
+                colorbar_type = 'auto'
+                _add_color_bar = False
+            else:
+                _add_color_bar = True
+
+            if colorbar_type.lower() == 'auto':
+                if ((len(np.unique(color)) / len(color)) <= 0.5) and (len(np.unique(color) < 9)):
+                    # Data are considered categorical
+                    colorbar_type = 'categorical'
+                else:
+                    colorbar_type = 'continuous'
+            else:
+                colorbar_type = colorbar_type.lower()
+
+            if colorbar_type == 'categorical':
+                if legend.lower() == 'auto':
+                    legend = [str(c) for c in color]
+                color_unique = sorted(list(np.unique(color)))
+                nb_color_needed = len(color_unique)
+                palette_colors = palette_from_name_to_function[
+                    session.palette_name](nb_color_needed)
+                color = [palette_colors[color_unique.index(c)] for c in color]
+            elif colorbar_type == 'continuous':
+                palette_colors = palette_from_name_to_function[
+                    session.palette_name](256)
+                color_mapper = LinearColorMapper(palette=palette_colors,
+                                                 low=np.min(color),
+                                                 high=np.max(color))
+                color = np.array(color)
+                col_indexes = (color - color.min()) / (
+                            (color.max() - color.min()) / (256 - 1))
+                color = [palette_colors[int(ci)] for ci in col_indexes]
+                if _add_color_bar:
+                    color_bar = ColorBar(color_mapper=color_mapper,
+                                         location=(0, 0))
+                    _color_bar_made = True
+
     color = [format_color(c) for c in color]
 
-    steps = [
-        (lambda f, x_copy=x_i, y_copy=y_i, col_c=col_i: f.line(x=x_copy,
-                                                               y=y_copy,
-                                                               color=col_c))
-        for (x_i, y_i, col_i) in zip(x, y, color)]
+    # We pre-process `legend`
+    add_legend = True
+    if (legend is None) or (legend == 'auto'):
+        add_legend = False
+    elif isinstance(legend, str):
+        legend = [legend for _ in y]
+    elif isinstance(legend, (list, np.ndarray, tuple)) and isinstance(legend[0], str):
+        if len(legend) != len(y):
+            raise ValueError('The number of elements in `legend` is not '
+                             'consistent with the data')
 
+    if add_legend:
+        steps = [
+            (lambda f, x_copy=x_i, y_copy=y_i, col_c=col_i, leg_c=leg_i: f.line(
+                x=x_copy,
+                y=y_copy,
+                color=col_c, legend_label=leg_c))
+            for (x_i, y_i, col_i, leg_i) in zip(x, y, color, legend)]
+    else:
+        steps = [
+            (lambda f, x_copy=x_i, y_copy=y_i, col_c=col_i: f.line(
+                x=x_copy,
+                y=y_copy,
+                color=col_c))
+            for (x_i, y_i, col_i) in zip(x, y, color)]
 
     def _make_fig():
         fig = figure(width=width, height=height, title=title,
@@ -81,6 +138,9 @@ def line_base(y, x, width, height, description, title, show_plot, color,
         fig.title.align = 'center'
         fig.xgrid.grid_line_dash = [8, 3, 2, 3]
         fig.ygrid.grid_line_dash = [8, 3, 2, 3]
+        fig.toolbar.autohide = True
+        if _color_bar_made and _add_color_bar:
+            fig.add_layout(color_bar, 'right')
         return fig
 
     plot = Plot(make_figure=_make_fig, steps=steps, description=description,
@@ -101,11 +161,13 @@ def _update_line_default_args(line, session):
     def line_updated(y, x=None, width=session.width, height=session.height,
                      description=session.description, title=session.title,
                      show_plot=session.show_plot, color=None,
+                     colorbar_type='auto', legend='auto',
                      save_path=session.save_path,
                      grid_visible=session.grid_visible):
         plot = line(y=y, x=x, width=width, height=height,
                     description=description, title=title, show_plot=show_plot,
-                    color=color, grid_visible=grid_visible, session=session,
+                    color=color, colorbar_type=colorbar_type, legend=legend,
+                    grid_visible=grid_visible, session=session,
                     save_path=save_path)
         return plot
     return line_updated

@@ -3,9 +3,9 @@
 
 Depict is built on the top of Bokeh. It aims at providing one-line access 
 to the most common types of graph by avoiding boilerplate code. Graphs are
-esthetic, efficiently rendered, interactive and sharable.
+aesthetic, efficiently rendered, interactive and sharable.
 
-It is made for data {scientist, analyst, engineer, lead, etc} seeking to 
+It is made for data-{scientist, analyst, engineer, lead, etc} seeking to 
 create beautiful plots while reducing the graph-tweaking time.
 
 # Guiding principles

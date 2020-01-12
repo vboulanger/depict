@@ -112,10 +112,17 @@ def is_color(c):
     return False
 
 
+def from_rgb_to_hex(col):
+    return '#' + hex(col[0])[2:].upper().zfill(2) + hex(col[1])[
+                                                    2:].upper().zfill(2) + hex(
+        col[2])[2:].upper().zfill(2)
+
+
 def format_color(col):
     if isinstance(col, (list, np.ndarray, tuple)) and all(
             [isinstance(c_i, (float, int)) for c_i in col]) and (
             0 <= np.min(col) <= np.max(col) <= 1) and (len(col) == 3):
-        return (int(255 * col[0]), int(255 * col[1]), int(255 * col[2]))
+        rgb = (int(255 * col[0]), int(255 * col[1]), int(255 * col[2]))
+        return from_rgb_to_hex(rgb)
     else:
         return col
