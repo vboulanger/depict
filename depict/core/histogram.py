@@ -2,6 +2,7 @@ from .plot import Plot
 from .tools import show_base, save_base, is_color, format_color
 from ..tools.color_palettes import palette_from_name_to_function
 
+import copy
 import numbers
 
 from bokeh.plotting import figure
@@ -10,10 +11,10 @@ import numpy as np
 import pandas as pd
 
 
-def point_base(x, y, source_dataframe, width, height, description, title, x_label, y_label,
-              show_plot, color, colorbar_type, legend, size, alpha,
-              x_axis_type, y_axis_type, grid_visible, session,
-              save_path):
+def histogram_base(x, y, source_dataframe, tick_label, label_orientation, width, height, description, title, x_label, y_label,
+                   show_plot, color, colorbar_type, legend, bar_width, alpha,
+                   x_axis_type, y_axis_type, grid_visible, session,
+                   save_path):
     """ Scatter plot
 
     Args:
@@ -61,9 +62,11 @@ def point_base(x, y, source_dataframe, width, height, description, title, x_labe
                                      'DataFrame provided in source_dataframe')
                 x = source_dataframe[x].values
 
-    if (x is None) or (y is None):
-        raise ValueError('X and y must be specified. They must be a one '
-                         'dimensional array like')
+    if y is None:
+        raise ValueError('y must be specified. It must be a one dimensional '
+                         'array like')
+    if x is None:
+        x = np.arange(len(y))
     if (not isinstance(x, (list, np.ndarray, tuple))) or (not isinstance(y, (list, np.ndarray, tuple))):
         raise ValueError('X and y must be a one dimensional array like')
     if (np.ndim(x) != 1) or (np.ndim(y) != 1):
@@ -162,13 +165,18 @@ def point_base(x, y, source_dataframe, width, height, description, title, x_labe
             raise ValueError('The number of elements in `legend` is not '
                              'consistent with the data')
 
-    # We pre-process `size`
-    if isinstance(size, numbers.Real):
-        size = [size for _ in y]
-    elif isinstance(size, (list, np.ndarray, tuple)):
-        if len(size) != len(y):
-            raise ValueError('The size argument given is non consistent '
+    # We pre-process `bar_width`
+    if isinstance(bar_width, numbers.Real):
+        bar_width = [bar_width for _ in y]
+    elif isinstance(bar_width, (list, np.ndarray, tuple)):
+        if len(bar_width) != len(y):
+            raise ValueError('The bar_width argument given is non consistent '
                              'with the data')
+    elif isinstance(bar_width, str) and (bar_width.lower() == 'auto'):
+        if len(x) == 1:
+            bar_width = [1 for _ in y]
+        else:
+            bar_width = [np.min(np.abs(np.diff(sorted(x)))) * 0.8 for _ in y]
 
     # We pre-process `alpha`
     if isinstance(alpha, numbers.Real):
@@ -215,40 +223,83 @@ def point_base(x, y, source_dataframe, width, height, description, title, x_labe
         y_axis_type = 'datetime'
         y = pd.to_datetime(y)
 
+    # We pre-process `tick_label`
+    def _format_x_val(x_val):
+        if int(x_val) == x_val:
+            return int(x_val)
+        else:
+            return float(x_val)
+    if isinstance(tick_label, (list, np.ndarray, tuple)):
+        if x_axis_type == 'linear':
+            # Note that bokeh major_label_overrides dict will not accept
+            # 1.0 to replace the label of 1
+            major_label_overrides = {_format_x_val(x[i]): str(tl) for i, tl in
+                                     enumerate(tick_label)}
+        else:
+            major_label_overrides = {_format_x_val(x[i]): str(tl) for i, tl in
+                                     enumerate(tick_label)}
+    elif tick_label is None:
+        major_label_overrides = {}
+    else:
+        major_label_overrides = {_format_x_val(x_i): str(tick_label) for x_i in
+                                 x}
+
     # We group x and y based on legend because in bokek, figure.scatter can
     # only set one legend label by scatter plot. So if the legend contains
     # an iterable of strings, we need to look for unique values and mask
     # all attributes
     legend_unique = np.unique(legend)
     mask_all = [l_i == np.array(legend) for l_i in legend_unique]
+    x_copy = copy.deepcopy(x)
     x = [np.array(x)[mask] for mask in mask_all]
     y = [np.array(y)[mask] for mask in mask_all]
     color = [np.array(color)[mask] for mask in mask_all]
-    size = [np.array(size)[mask] for mask in mask_all]
+    bar_width = [np.array(bar_width)[mask] for mask in mask_all]
     alpha = [np.array(alpha)[mask] for mask in mask_all]
 
     steps = []
     legend_exist = False
     legend_unique = [str(lu) for lu in legend_unique]
-    for (x_i, y_i, col_i, leg_i, s_i, a_i) in zip(x, y, color, legend_unique,
-                                                  size, alpha):
+    for (x_i, y_i, col_i, leg_i, bw_i, a_i) in zip(x, y, color, legend_unique,
+                                                   bar_width, alpha):
         if leg_i:
             legend_exist = True
 
-            def step(f, x_copy=x_i, y_copy=y_i, col_c=col_i, leg_c=leg_i,
-                     s_c=s_i, a_c=a_i):
-                f.scatter(x=x_copy, y=y_copy, color=col_c, legend_label=leg_c,
-                          size=s_c, alpha=a_c)
+            def step(f, x_c=x_i, y_copy=y_i, col_c=col_i, leg_c=leg_i,
+                     bw_c=bw_i, a_c=a_i):
+                left = np.array(x_c) - (np.array(bw_c) / 2)
+                right = np.array(x_c) + (np.array(bw_c) / 2)
+                f.quad(bottom=0, top=y_copy, left=left, right=right,
+                       color=col_c, legend_label=leg_c, alpha=a_c)
         else:
-            def step(f, x_copy=x_i, y_copy=y_i, col_c=col_i,
-                     s_c=s_i, a_c=a_i):
-                f.scatter(x=x_copy, y=y_copy, color=col_c, size=s_c, alpha=a_c)
+            def step(f, x_c=x_i, y_copy=y_i, col_c=col_i,
+                     bw_c=bw_i, a_c=a_i):
+                left = np.array(x_c) - (np.array(bw_c) / 2)
+                right = np.array(x_c) + (np.array(bw_c) / 2)
+                f.quad(bottom=0, top=y_copy, left=left, right=right,
+                       color=col_c, alpha=a_c)
         steps.append(step)
 
     if legend_exist:
         def make_legend_interactive(f):
             f.legend.click_policy = "hide"
         steps.append(make_legend_interactive)
+
+    def format_ticks(f, x_axis_type_c=x_axis_type, x_copy_c=x_copy,
+                     major_label_overrides_c=major_label_overrides):
+        try:
+            f.xaxis.ticker.ticks = f.xaxis.ticker.ticks + x_copy_c
+        except:
+            f.xaxis.ticker = x_copy_c
+        try:
+            f.xaxis.major_label_overrides.update(major_label_overrides_c)
+        except:
+            f.xaxis.major_label_overrides = major_label_overrides_c
+
+    if (x_axis_type == 'linear') and isinstance(x_copy[0],
+                                                numbers.Real) and major_label_overrides:
+        steps.append(format_ticks)
+
 
     def _make_fig():
         fig = figure(width=width, height=height, title=title,
@@ -260,6 +311,11 @@ def point_base(x, y, source_dataframe, width, height, description, title, x_labe
         fig.xgrid.grid_line_dash = [8, 3, 2, 3]
         fig.ygrid.grid_line_dash = [8, 3, 2, 3]
         fig.toolbar.autohide = True
+        # if (x_axis_type == 'linear') and isinstance(x_copy[0], numbers.Real):
+        #     if major_label_overrides:
+        #         fig.xaxis.ticker = x_copy
+        #         fig.xaxis.major_label_overrides = major_label_overrides
+        fig.xaxis.major_label_orientation = label_orientation
         if _color_bar_made and _add_color_bar:
             color_mapper = LinearColorMapper(palette=palette_colors,
                                              low=color_min,
@@ -282,20 +338,21 @@ def point_base(x, y, source_dataframe, width, height, description, title, x_labe
     else:
         return plot
 
-def _update_point_default_args(point, session):
-    def point_updated(x, y, source_dataframe=None, width=session.width,
+def _update_histogram_default_args(histogram_base, session):
+    def histogram_updated(x, y, source_dataframe=None, tick_label=None, label_orientation='horizontal', width=session.width,
                      height=session.height, description=session.description,
                      title=session.title, x_label=None, y_label=None,
                      show_plot=session.show_plot, color=None,
-                     colorbar_type='auto', legend='auto', size=6, alpha=1,
+                     colorbar_type='auto', legend='auto', bar_width='auto', alpha=1,
                      x_axis_type='auto', y_axis_type='auto',
                      save_path=session.save_path,
                      grid_visible=session.grid_visible):
-        plot = point(x=x, y=y, source_dataframe=source_dataframe, width=width,
-                    height=height, description=description, title=title,
-                    x_label=x_label, y_label=y_label, show_plot=show_plot,
-                    color=color, colorbar_type=colorbar_type, legend=legend,
-                    size=size, alpha=alpha, x_axis_type=x_axis_type, y_axis_type=y_axis_type,
-                    grid_visible=grid_visible, session=session, save_path=save_path)
+        plot = histogram_base(x=x, y=y, source_dataframe=source_dataframe,
+                              tick_label=tick_label, label_orientation=label_orientation, width=width,
+                         height=height, description=description, title=title,
+                         x_label=x_label, y_label=y_label, show_plot=show_plot,
+                         color=color, colorbar_type=colorbar_type, legend=legend,
+                         bar_width=bar_width, alpha=alpha, x_axis_type=x_axis_type, y_axis_type=y_axis_type,
+                         grid_visible=grid_visible, session=session, save_path=save_path)
         return plot
-    return point_updated
+    return histogram_updated

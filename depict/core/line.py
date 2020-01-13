@@ -114,7 +114,7 @@ def line_base(y, x, source_dataframe, width, height, description, title, x_label
 
     # We pre-process `color`
     _color_bar_made = False
-    if not color:
+    if color is None:
         nb_color_needed = len(y)
         color = palette_from_name_to_function[session.palette_name](
             nb_color_needed)
