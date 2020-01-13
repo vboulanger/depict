@@ -53,13 +53,16 @@ interact with depict figure and get access to a fine level of granularity.
 # Get started
 ### Hello world
 
-```
+```python
 import depict
 
 depict.line([3, 1, 4, 1, 5, 9, 2, 6, 5, 3])
 ```
 
 ### Key features
+
+![Image 1][/images_read_me/plot_1.png]
+
 
 
 
