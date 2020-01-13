@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="depict",
-    version="0.1",
+    version="0.1.1",
     author="Victor Boulanger",
     author_email="vb@live.fr",
     description="Business grade visualizations in seconds",
@@ -22,6 +22,7 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Visualization",
     ],
     python_requires='>=3.6',
+    install_requires=['bokeh==1.4.0', 'seaborn==0.9.0', 'pandas==0.24.2'],
 )
 
 # https://pypi.org/classifiers/
