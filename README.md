@@ -1,4 +1,14 @@
 # Depict
+
+<img src="https://img.shields.io/pypi/v/depict.svg" alt="latest release" />
+
+<a href="https://pypi.org/project/depict/">
+<img src="https://img.shields.io/pypi/l/depict.svg" alt="license" />
+</a>
+<a href="https://pypi.org/project/depict/">
+<img src="https://img.shields.io/pypi/status/depict.svg" alt="status" />
+</a>
+
 **Business grade plots in seconds.**
 
 Depict is built on the top of Bokeh. It aims at providing one-line access 
@@ -14,7 +24,7 @@ create beautiful plots while reducing the graph-tweaking time.
 While Bokeh, Matplotlib, Dash and many others provide a tremendous flexibility,
 Depict will get you faster to the classical graphs by making choices for you.
 Scatter plots, histograms and other heat-maps are accessible in one line.
-* **Looking fresh is not more expensive**
+* **Looking fresh**
 
 Graphs should be ready to share and pleasant to look at, for technical and 
  non technical audience. Depict takes care of the freshness of your graphs
@@ -58,13 +68,98 @@ import depict
 
 depict.line([3, 1, 4, 1, 5, 9, 2, 6, 5, 3])
 ```
+![Image_1](images_read_me/plot_1.png)
 
 ### Key features
+Common to all examples:
+```python
+import depict
+import numpy as np
+import pandas as pd
+```
+* ##### One line graphs
+```python
+random_walk = np.cumsum(np.random.rand(1000) - 0.5)
+depict.line(random_walk, title='Random walk', legend='Path', x_label='Step')
+```
+![Image_1](images_read_me/plot_random_walk.png)
+* ##### Sessions
+Your graph parameters are stored in a session to keep your graphs visually
+consistent and avoid boilerplate code.
+```python
+depict.session(width=100, grid_visible=True, palette_name='linear_blue')
+```
+* ##### Flexibility
+Native compatibility with numpy arrays and pandas dataframes as well as NaN and
+NaT handling.
+```python
+random_walk = lambda : np.cumsum(np.random.rand(1000) - 0.5)
+df = pd.DataFrame({'Col 1': random_walk(), 'Col 2': random_walk()})
 
-![Image 1][/images_read_me/plot_1.png]
+depict.line(y=['Col 1', 'Col 2'], source_dataframe=df)
+```
+![Image_1](images_read_me/plot_random_walk_2.png)
+
+* ##### Matrix-like layout
+You plots can be rendered in line and column just like a matrix would be.
+```python
+random_walk = lambda : np.cumsum(np.random.rand(1000) - 0.5)
+plot_1 = depict.line(y=random_walk(), title='Walk 1')
+plot_2 = depict.line(y=random_walk(), title='Walk 2')
+plot_3 = depict.line(y=random_walk(), title='Walk 3')
+
+depict.show([[plot_1, plot_2], [plot_3]])
+```
+![Image_1](images_read_me/matrix-like-layout.png)
+
+* ##### Sum of plots
+Plots sharing a consistent background space can be summed and their content
+will be superimposed.
+```python
+p_1 = depict.point(x=np.arange(10), y=np.arange(10) + np.random.rand(10))
+p_2 = depict.line(y=np.arange(10), color='purple')
+p_sum = p_1 + p_2
+
+depict.show([[p_1, p_2], p_sum])
+```
+![Image_1](images_read_me/sum_graph.png)
+
+* ##### Textual metadata
+Graphs often come along with a context. For that reason you can add
+HTML-formatted text to be displayed below your graph.
+
+```python
+description = """
+<h2>Graph generated for the README</h2>
+<br>
+HTML code can be added here
+"""
+plot_1 = depict.histogram(x=None, y=np.random.rand(10), description=description)
+```
+![Image_1](images_read_me/hist_example_context.png)
+
+* ##### Direct access to Bokeh figure
+To access a finer level of customization, you can retrieve the Bokeh figure
+object easily and interact with it.  
+```python
+plot = depict.histogram(x=None, y=[1, 2, 3], show_plot=False)
+plot.figure  # This is a Bokeh figure
+```
+* ##### HTML export
+Graphs as HTML files allow you to keep them fully interactive and readable
+without any specific software and on several platforms.
+
+```python
+depict.point(x=[1, 2, 3], y=[4, 5, 2], save_path='my_plot.html')
+```
+
+* ##### Jupyter notebook / JupyterLab integration
+Bokeh is nicely integrated in Jupyter notebooks and so does Depict.
+
+![Image_1](images_read_me/notebook_integration.png)
 
 
-
-
-
+# Contributing
+The development of Depict takes place on Github. Any contribution is welcome!
+ 
 
