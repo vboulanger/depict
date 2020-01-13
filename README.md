@@ -1,13 +1,14 @@
 # Depict
 
-<img src="https://img.shields.io/pypi/v/depict.svg" alt="latest release" />
 <a href="https://pypi.org/project/depict/">
-<img src="https://img.shields.io/pypi/l/depict.svg" alt="license" />
+<img src="https://img.shields.io/pypi/v/depict.svg" alt="latest release" />
 </a>
 <a href="https://pypi.org/project/depict/">
 <img src="https://img.shields.io/pypi/status/depict.svg" alt="status" />
 </a>
-
+<a href="https://pypi.org/project/depict/">
+<img src="https://img.shields.io/pypi/l/depict.svg" alt="license" />
+</a>
 
 **Business grade plots in seconds.**
 
