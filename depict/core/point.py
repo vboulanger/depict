@@ -10,11 +10,11 @@ import numpy as np
 import pandas as pd
 
 
-def line_base(y, x, source_dataframe, width, height, description, title, x_label, y_label,
-              show_plot, color, colorbar_type, legend, line_width, alpha, style,
-              x_axis_type, y_axis_type, fill_between, grid_visible, session,
+def point_base(x, y, source_dataframe, width, height, description, title, x_label, y_label,
+              show_plot, color, colorbar_type, legend, size, alpha,
+              x_axis_type, y_axis_type, grid_visible, session,
               save_path):
-    """ One dimensional plot
+    """ Scatter plot
 
     Args:
         x (array-like): X-axis data
@@ -29,95 +29,53 @@ def line_base(y, x, source_dataframe, width, height, description, title, x_label
             # because a tuple is considered as a key, and not as an iterable
             # of keys
             # Same for DataFrame
+            if y not in source_dataframe.keys():
+                raise ValueError('The value of y is not a key of the '
+                                 'dictionary provided in source_dataframe')
+            if isinstance(legend, str) and (legend.lower() == 'auto'):
+                if isinstance(y, str):
+                    legend = str(y)
+            y = source_dataframe[y]
 
-            if isinstance(y, (list, np.ndarray)):
-                if not all([y_i in source_dataframe.keys() for y_i in y]):
-                    raise ValueError('At least some of the values of y are '
-                                     'not keys of the dictionary provided in '
-                                     'source_dataframe')
-                if legend.lower() == 'auto':
-                    legend = [y_i if isinstance(y_i, str) else '' for y_i in y]
-                y = [source_dataframe[y_i] for y_i in y]
-            else:
-                if y not in source_dataframe.keys():
-                    raise ValueError('The value of y is not a key of the '
-                                     'dictionary provided in source_dataframe')
-                if legend.lower() == 'auto':
-                    if isinstance(y, str):
-                        legend = str(y)
-                y = [source_dataframe[y]]
-
-            if x is None:
-                pass  # Will be treated as the default x behavior
-            elif isinstance(x, (list, np.ndarray)):
-                if not all([x_i in source_dataframe.keys() for x_i in x]):
-                    raise ValueError('At least some of the values of x are '
-                                     'not keys of the dictionary provided in '
-                                     'source_dataframe')
-                x = [source_dataframe[x_i] for x_i in x]
-            else:
-                if x not in source_dataframe.keys():
-                    raise ValueError('The value of x is not a key of the '
-                                     'dictionary provided in source_dataframe')
-                x = source_dataframe[x]
+            if x not in source_dataframe.keys():
+                raise ValueError('The value of x is not a key of the '
+                                 'dictionary provided in source_dataframe')
+            x = source_dataframe[x]
 
         elif isinstance(source_dataframe, pd.DataFrame):
-            if isinstance(y, (list, np.ndarray)):
-                if not all([y_i in source_dataframe.keys() for y_i in y]):
-                    raise ValueError('At least some of the values of y are '
-                                     'not keys of the DataFrame provided in '
-                                     'source_dataframe')
-                if legend.lower() == 'auto':
-                    legend = [y_i if isinstance(y_i, str) else '' for y_i in y]
-                y = [source_dataframe[y_i].values for y_i in y]
-            else:
-                if y not in source_dataframe.keys():
-                    raise ValueError('The value of y is not a key of the '
-                                     'DataFrame provided in source_dataframe')
-                if legend.lower() == 'auto':
-                    if isinstance(y, str):
-                        legend = str(y)
-                y = [source_dataframe[y]]
+            if y not in source_dataframe.keys():
+                raise ValueError('The value of y is not a key of the '
+                                 'DataFrame provided in source_dataframe')
+            if isinstance(legend, str) and (legend.lower() == 'auto'):
+                if isinstance(y, str):
+                    legend = str(y)
+            y = source_dataframe[y]
 
             if x is None:
                 # Be careful, the behavior is different for a dict and for a
                 # Dataframe
                 x = source_dataframe.index.values
-            elif isinstance(x, (list, np.ndarray)):
-                if not all([x_i in source_dataframe.keys() for x_i in x]):
-                    raise ValueError('At least some of the values of x are '
-                                     'not keys of the DataFrame provided in '
-                                     'source_dataframe')
-                x = [source_dataframe[x_i].values for x_i in x]
             else:
                 if x not in source_dataframe.keys():
                     raise ValueError('The value of x is not a key of the '
                                      'DataFrame provided in source_dataframe')
                 x = source_dataframe[x].values
 
-    # We pre-process `x` and `y`
-    if x is None:
-        if isinstance(y[0], (list, np.ndarray, tuple)):
-            x = [np.arange(len(y_i)) for y_i in y]
-        else:
-            x = [np.arange(len(y))]
-            y = [y]
-    elif np.ndim(x) == 1:
-        if np.ndim(y) == 1:
-            x = [x]
-            y = [y]
-        elif np.ndim(y) == 2:
-            x = [x for _ in y]
-    elif np.ndim(x) == 2:
-        if np.ndim(y) == 1:  # Corner case
-            y = [y for _ in x]
+    if (x is None) or (y is None):
+        raise ValueError('X and y must be specified. They must be a one '
+                         'dimensional array like')
+    if (not isinstance(x, (list, np.ndarray, tuple))) or (not isinstance(y, (list, np.ndarray, tuple))):
+        raise ValueError('X and y must be a one dimensional array like')
+    if (np.ndim(x) != 1) or (np.ndim(y) != 1):
+        raise ValueError('X and y must be a one dimensional array like')
 
     # We pre-process `color`
     _color_bar_made = False
     if not color:
-        nb_color_needed = len(y)
+        nb_color_needed = 1
         color = palette_from_name_to_function[session.palette_name](
             nb_color_needed)
+        color = [color[0] for _ in y]
     # We pre-process `color`
     # Corner case: if color = [0.5, 0.6, 0.7] and len(y) == 3, we cannot say if
     # color means actually the color defined by [0.5, 0.6, 0.7] or if this
@@ -166,7 +124,7 @@ def line_base(y, x, source_dataframe, width, height, description, title, x_label
                 colorbar_type = colorbar_type.lower()
 
             if colorbar_type == 'categorical':
-                if legend.lower() == 'auto':
+                if isinstance(legend, str) and (legend.lower() == 'auto'):
                     legend = [str(c) for c in color]
                 color_unique = sorted(list(np.unique(color)))
                 nb_color_needed = len(color_unique)
@@ -204,12 +162,12 @@ def line_base(y, x, source_dataframe, width, height, description, title, x_label
             raise ValueError('The number of elements in `legend` is not '
                              'consistent with the data')
 
-    # We pre-process `line_width`
-    if isinstance(line_width, numbers.Real):
-        line_width = [line_width for _ in y]
-    elif isinstance(line_width, (list, np.ndarray, tuple)):
-        if len(line_width) != len(y):
-            raise ValueError('The line_width argument given is non consistent '
+    # We pre-process `size`
+    if isinstance(size, numbers.Real):
+        size = [size for _ in y]
+    elif isinstance(size, (list, np.ndarray, tuple)):
+        if len(size) != len(y):
+            raise ValueError('The size argument given is non consistent '
                              'with the data')
 
     # We pre-process `alpha`
@@ -218,112 +176,79 @@ def line_base(y, x, source_dataframe, width, height, description, title, x_label
     elif isinstance(alpha, (list, np.ndarray, tuple)):
         if len(alpha) != len(y):
             raise ValueError(
-                'The alpha argument given is non consistent '
-                'with the data')
-
-    # We pre-process `style`
-    if isinstance(style, str):
-        style = [style.lower() for _ in y]
-    elif isinstance(style, (list, np.ndarray, tuple)):
-        if len(style) != len(y):
-            raise ValueError(
-                'The style argument given is non consistent '
-                'with the data')
-        style = [s.lower() for s in style]
-
-    def guess_style(style):
-        # This list is to be completted to match as much as possible with
-        # Matplotlib equivalent attribute
-        if style in ['-', '--', '---']:
-            return 'dashed'
-        elif style in ['.', '..', '...']:
-            return 'dotted'
-        elif style == '.-':
-            return 'dotdash'
-        elif style == '-.':
-            return 'dashdot'
-        else:
-            return style
-    style = [guess_style(s) for s in style]
+                'The alpha argument given is non consistent with the data')
 
     # We pre-process `x_axis_type` and `y_axis_type`
     if x_axis_type.lower() == 'auto':
-        if isinstance(x[0][0], numbers.Real):
+        if isinstance(x[0], numbers.Real):
             x_axis_type = 'linear'
         else:
             try:
-                pd.to_datetime(x[0][0], errors='raise')
+                pd.to_datetime(x[0], errors='raise')
             except ValueError:
-                # TODO: Change message error can x[0][0] may not make sense for
-                # the user. Same for y axis below
-                raise ValueError('`x_axis_type` is set to `auto` and x[0][0] '
+                raise ValueError('`x_axis_type` is set to `auto` and x[0] '
                                  'is neither a number, nor an object parsable '
-                                 'as a date. Object x[0][0]: {}'.format(
-                    x[0][0]))
+                                 'as a date. Object x[0]: {}'.format(x[0]))
             x_axis_type = 'datetime'
-            x = [pd.to_datetime(x_i) for x_i in x]
+            x = pd.to_datetime(x)
     elif x_axis_type.lower() in ['numeric', 'numerical']:
         x_axis_type = 'linear'
     elif x_axis_type.lower() in ['date', 'datetime', 'time']:
         x_axis_type = 'datetime'
-        x = [pd.to_datetime(x_i) for x_i in x]
+        x = pd.to_datetime(x)
     # Same with y axis
     if y_axis_type.lower() == 'auto':
-        if isinstance(y[0][0], numbers.Real):
+        if isinstance(y[0], numbers.Real):
             y_axis_type = 'linear'
         else:
             try:
-                pd.to_datetime(y[0][0], errors='raise')
+                pd.to_datetime(y[0], errors='raise')
             except ValueError:
-                raise ValueError('`y_axis_type` is set to `auto` and y[0][0] '
+                raise ValueError('`y_axis_type` is set to `auto` and y[0] '
                                  'is neither a number, nor an object parsable '
-                                 'as a date. Object y[0][0]: {}'.format(
-                    y[0][0]))
+                                 'as a date. Object y[0]: {}'.format(y[0]))
             y_axis_type = 'datetime'
-            y = [pd.to_datetime(y_i) for y_i in y]
+            y = pd.to_datetime(y)
     elif y_axis_type.lower() in ['numeric', 'numerical']:
         y_axis_type = 'linear'
     elif y_axis_type.lower() in ['date', 'datetime', 'time']:
         y_axis_type = 'datetime'
-        y = [pd.to_datetime(y_i) for y_i in y]
+        y = pd.to_datetime(y)
+
+    # We group x and y based on legend because in bokek, figure.scatter can
+    # only set one legend label by scatter plot. So if the legend contains
+    # an iterable of strings, we need to look for unique values and mask
+    # all attributes
+    legend_unique = np.unique(legend)
+    mask_all = [l_i == np.array(legend) for l_i in legend_unique]
+    x = [np.array(x)[mask] for mask in mask_all]
+    y = [np.array(y)[mask] for mask in mask_all]
+    color = [np.array(color)[mask] for mask in mask_all]
+    size = [np.array(size)[mask] for mask in mask_all]
+    alpha = [np.array(alpha)[mask] for mask in mask_all]
 
     steps = []
     legend_exist = False
-    for (x_i, y_i, col_i, leg_i, lw_i, a_i, s_i) in zip(x, y, color, legend,
-                                                        line_width, alpha,
-                                                        style):
+    legend_unique = [str(lu) for lu in legend_unique]
+    for (x_i, y_i, col_i, leg_i, s_i, a_i) in zip(x, y, color, legend_unique,
+                                                  size, alpha):
         if leg_i:
             legend_exist = True
+
             def step(f, x_copy=x_i, y_copy=y_i, col_c=col_i, leg_c=leg_i,
-                        lw_c=lw_i, a_c=a_i, s_c=s_i):
-                f.line(x=x_copy, y=y_copy, color=col_c, legend_label=leg_c,
-                       line_width=lw_c, alpha=a_c, line_dash=s_c)
+                     s_c=s_i, a_c=a_i):
+                f.scatter(x=x_copy, y=y_copy, color=col_c, legend_label=leg_c,
+                          size=s_c, alpha=a_c)
         else:
-            def step(f, x_copy=x_i, y_copy=y_i, col_c=col_i, lw_c=lw_i,
-                     a_c=a_i, s_c=s_i):
-                f.line(x=x_copy, y=y_copy, color=col_c, line_width=lw_c,
-                       alpha=a_c, line_dash=s_c)
+            def step(f, x_copy=x_i, y_copy=y_i, col_c=col_i,
+                     s_c=s_i, a_c=a_i):
+                f.scatter(x=x_copy, y=y_copy, color=col_c, size=s_c, alpha=a_c)
         steps.append(step)
 
     if legend_exist:
         def make_legend_interactive(f):
             f.legend.click_policy = "hide"
         steps.append(make_legend_interactive)
-
-    if fill_between:
-        if len(y) == 1:
-            pass
-            # TODO: Add warning and a piece of code to explain how to fill the
-            #  area between 2 curves
-        elif len(y) >= 2:
-            if not all(x[0] == x[1]):
-                # TODO: Transform this error into a warning and explain better
-                raise ValueError('When `fill_between` is True, x[0] and x[1] '
-                                 'must be the same.')
-
-            def fill_between_curves(f, x_0=x[0], y_0=y[0], y_1=y[1]):
-                f.varea(x=x_0, y1=y_0, y2=y_1, alpha=alpha[0], color=color[0])
-            steps.append(fill_between_curves)
 
     def _make_fig():
         fig = figure(width=width, height=height, title=title,
@@ -357,22 +282,20 @@ def line_base(y, x, source_dataframe, width, height, description, title, x_label
     else:
         return plot
 
-def _update_line_default_args(line, session):
-    def line_updated(y, x=None, source_dataframe=None, width=session.width,
+def _update_point_default_args(point, session):
+    def point_updated(x, y, source_dataframe=None, width=session.width,
                      height=session.height, description=session.description,
                      title=session.title, x_label=None, y_label=None,
                      show_plot=session.show_plot, color=None,
-                     colorbar_type='auto', legend='auto', line_width=1, alpha=1,
-                     style='solid', x_axis_type='auto', y_axis_type='auto',
-                     fill_between=False, save_path=session.save_path,
+                     colorbar_type='auto', legend='auto', size=6, alpha=1,
+                     x_axis_type='auto', y_axis_type='auto',
+                     save_path=session.save_path,
                      grid_visible=session.grid_visible):
-        plot = line(y=y, x=x, source_dataframe=source_dataframe, width=width,
+        plot = point(x=x, y=y, source_dataframe=source_dataframe, width=width,
                     height=height, description=description, title=title,
                     x_label=x_label, y_label=y_label, show_plot=show_plot,
                     color=color, colorbar_type=colorbar_type, legend=legend,
-                    line_width=line_width, alpha=alpha, style=style,
-                    x_axis_type=x_axis_type, y_axis_type=y_axis_type,
-                    fill_between=fill_between, grid_visible=grid_visible,
-                    session=session, save_path=save_path)
+                    size=size, alpha=alpha, x_axis_type=x_axis_type, y_axis_type=y_axis_type,
+                    grid_visible=grid_visible, session=session, save_path=save_path)
         return plot
-    return line_updated
+    return point_updated
