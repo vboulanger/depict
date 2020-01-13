@@ -1,7 +1,6 @@
 # Depict
 
 <img src="https://img.shields.io/pypi/v/depict.svg" alt="latest release" />
-
 <a href="https://pypi.org/project/depict/">
 <img src="https://img.shields.io/pypi/l/depict.svg" alt="license" />
 </a>
@@ -9,7 +8,9 @@
 <img src="https://img.shields.io/pypi/status/depict.svg" alt="status" />
 </a>
 
+
 **Business grade plots in seconds.**
+
 
 Depict is built on the top of Bokeh. It aims at providing one-line access 
 to the most common types of graph by avoiding boilerplate code. Graphs are
@@ -77,19 +78,19 @@ import depict
 import numpy as np
 import pandas as pd
 ```
-* ##### One line graphs
+* #### One line graphs
 ```python
 random_walk = np.cumsum(np.random.rand(1000) - 0.5)
 depict.line(random_walk, title='Random walk', legend='Path', x_label='Step')
 ```
 ![Image_1](images_read_me/plot_random_walk.png)
-* ##### Sessions
+* #### Sessions
 Your graph parameters are stored in a session to keep your graphs visually
 consistent and avoid boilerplate code.
 ```python
 depict.session(width=100, grid_visible=True, palette_name='linear_blue')
 ```
-* ##### Flexibility
+* #### Flexibility
 Native compatibility with numpy arrays and pandas dataframes as well as NaN and
 NaT handling.
 ```python
@@ -100,7 +101,7 @@ depict.line(y=['Col 1', 'Col 2'], source_dataframe=df)
 ```
 ![Image_1](images_read_me/plot_random_walk_2.png)
 
-* ##### Matrix-like layout
+* #### Matrix-like layout
 You plots can be rendered in line and column just like a matrix would be.
 ```python
 random_walk = lambda : np.cumsum(np.random.rand(1000) - 0.5)
@@ -112,7 +113,7 @@ depict.show([[plot_1, plot_2], [plot_3]])
 ```
 ![Image_1](images_read_me/matrix-like-layout.png)
 
-* ##### Sum of plots
+* #### Sum of plots
 Plots sharing a consistent background space can be summed and their content
 will be superimposed.
 ```python
@@ -124,7 +125,7 @@ depict.show([[p_1, p_2], p_sum])
 ```
 ![Image_1](images_read_me/sum_graph.png)
 
-* ##### Textual metadata
+* #### Textual metadata
 Graphs often come along with a context. For that reason you can add
 HTML-formatted text to be displayed below your graph.
 
@@ -138,14 +139,14 @@ plot_1 = depict.histogram(x=None, y=np.random.rand(10), description=description)
 ```
 ![Image_1](images_read_me/hist_example_context.png)
 
-* ##### Direct access to Bokeh figure
+* #### Direct access to Bokeh figure
 To access a finer level of customization, you can retrieve the Bokeh figure
 object easily and interact with it.  
 ```python
 plot = depict.histogram(x=None, y=[1, 2, 3], show_plot=False)
 plot.figure  # This is a Bokeh figure
 ```
-* ##### HTML export
+* #### HTML export
 Graphs as HTML files allow you to keep them fully interactive and readable
 without any specific software and on several platforms.
 
@@ -153,7 +154,7 @@ without any specific software and on several platforms.
 depict.point(x=[1, 2, 3], y=[4, 5, 2], save_path='my_plot.html')
 ```
 
-* ##### Jupyter notebook / JupyterLab integration
+* #### Jupyter notebook / JupyterLab integration
 Bokeh is nicely integrated in Jupyter notebooks and so does Depict.
 
 ![Image_1](images_read_me/notebook_integration.png)
