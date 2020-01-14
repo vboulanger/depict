@@ -339,14 +339,16 @@ def histogram_base(x, y, source_dataframe, tick_label, label_orientation, width,
         return plot
 
 def _update_histogram_default_args(histogram_base, session):
-    def histogram_updated(x, y, source_dataframe=None, tick_label=None, label_orientation='horizontal', width=session.width,
-                     height=session.height, description=session.description,
-                     title=session.title, x_label=None, y_label=None,
-                     show_plot=session.show_plot, color=None,
-                     colorbar_type='auto', legend='auto', bar_width='auto', alpha=1,
-                     x_axis_type='auto', y_axis_type='auto',
-                     save_path=session.save_path,
-                     grid_visible=session.grid_visible):
+    def histogram_updated(x=None, y, source_dataframe=None, tick_label=None,
+                          label_orientation='horizontal', width=session.width,
+                          height=session.height,
+                          description=session.description, title=session.title,
+                          x_label=None, y_label=None,
+                          show_plot=session.show_plot, color=None,
+                          colorbar_type='auto', legend='auto',
+                          bar_width='auto', alpha=1, x_axis_type='auto',
+                          y_axis_type='auto', save_path=session.save_path,
+                          grid_visible=session.grid_visible):
         plot = histogram_base(x=x, y=y, source_dataframe=source_dataframe,
                               tick_label=tick_label, label_orientation=label_orientation, width=width,
                          height=height, description=description, title=title,
