@@ -339,7 +339,7 @@ def histogram_base(x, y, source_dataframe, tick_label, label_orientation, width,
         return plot
 
 def _update_histogram_default_args(histogram_base, session):
-    def histogram_updated(x=None, y, source_dataframe=None, tick_label=None,
+    def histogram_updated(y, x=None, source_dataframe=None, tick_label=None,
                           label_orientation='horizontal', width=session.width,
                           height=session.height,
                           description=session.description, title=session.title,
