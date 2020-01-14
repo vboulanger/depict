@@ -21,8 +21,8 @@ setuptools.setup(
         "Natural Language :: English",
         "Topic :: Scientific/Engineering :: Visualization",
     ],
-    python_requires='>=3.6',
-    install_requires=['bokeh==1.4.0', 'seaborn==0.9.0', 'pandas==0.24.2'],
+    python_requires='>=3.5',
+    install_requires=['bokeh>=1.4.0', 'seaborn>=0.9.0', 'pandas>=0.24.2'],
 )
 
 # https://pypi.org/classifiers/

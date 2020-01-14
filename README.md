@@ -91,6 +91,17 @@ consistent and avoid boilerplate code.
 ```python
 depict.session(width=100, grid_visible=True, palette_name='linear_blue')
 ```
+
+* #### Color bars made easy
+```python
+x = np.random.random(1000)
+y = np.random.random(1000)
+color = np.sin(x) + np.sin(y)
+
+depict.point(x=x, y=y, color=color)
+```
+![Image_1](images_read_me/colorbar.png)
+
 * #### Flexibility
 Native compatibility with numpy arrays and pandas dataframes as well as NaN and
 NaT handling.
