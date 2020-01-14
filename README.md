@@ -125,7 +125,7 @@ depict.show([[plot_1, plot_2], [plot_3]])
 ```
 ![Image_1](images_read_me/matrix-like-layout.png)
 
-* #### Sum of plots
+* #### Sum graphs, just like numbers
 Plots sharing a consistent background space can be summed and their content
 will be superimposed.
 ```python
