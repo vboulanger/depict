@@ -71,7 +71,7 @@ import depict
 
 depict.line([3, 1, 4, 1, 5, 9, 2, 6, 5, 3])
 ```
-![Image_1](images_read_me/plot_1.png)
+![Image_1](https://raw.githubusercontent.com/vboulanger/depict/master/images_read_me/plot_1.png)
 
 ### Key features
 Common to all examples:
@@ -85,7 +85,7 @@ import pandas as pd
 random_walk = np.cumsum(np.random.rand(1000) - 0.5)
 depict.line(random_walk, title='Random walk', legend='Path', x_label='Step')
 ```
-![Image_1](images_read_me/plot_random_walk.png)
+![Image_1](https://raw.githubusercontent.com/vboulanger/depict/master/images_read_me/plot_random_walk.png)
 * #### Sessions
 Your graph parameters are stored in a session to keep your graphs visually
 consistent and avoid boilerplate code.
@@ -101,7 +101,7 @@ color = np.sin(x) + np.sin(y)
 
 depict.point(x=x, y=y, color=color)
 ```
-![Image_1](images_read_me/colorbar.png)
+![Image_1](https://raw.githubusercontent.com/vboulanger/depict/master/images_read_me/colorbar.png)
 
 * #### Flexibility
 Native compatibility with numpy arrays and pandas dataframes as well as NaN and
@@ -112,7 +112,7 @@ df = pd.DataFrame({'Col 1': random_walk(), 'Col 2': random_walk()})
 
 depict.line(y=['Col 1', 'Col 2'], source_dataframe=df)
 ```
-![Image_1](images_read_me/plot_random_walk_2.png)
+![Image_1](https://raw.githubusercontent.com/vboulanger/depict/master/images_read_me/plot_random_walk_2.png)
 
 * #### Matrix-like layout
 You plots can be rendered in line and column just like a matrix would be.
@@ -124,7 +124,7 @@ plot_3 = depict.line(y=random_walk(), title='Walk 3')
 
 depict.show([[plot_1, plot_2], [plot_3]])
 ```
-![Image_1](images_read_me/matrix-like-layout.png)
+![Image_1](https://raw.githubusercontent.com/vboulanger/depict/master/images_read_me/matrix-like-layout.png)
 
 * #### Sum graphs, just like numbers
 Plots sharing a consistent background space can be summed and their content
@@ -136,7 +136,7 @@ p_sum = p_1 + p_2
 
 depict.show([[p_1, p_2], p_sum])
 ```
-![Image_1](images_read_me/sum_graph.png)
+![Image_1](https://raw.githubusercontent.com/vboulanger/depict/master/images_read_me/sum_graph.png)
 
 * #### Textual metadata
 Graphs often come along with a context. For that reason you can add
@@ -150,7 +150,7 @@ HTML code can be added here
 """
 plot_1 = depict.histogram(x=None, y=np.random.rand(10), description=description)
 ```
-![Image_1](images_read_me/hist_example_context.png)
+![Image_1](https://raw.githubusercontent.com/vboulanger/depict/master/images_read_me/hist_example_context.png)
 
 * #### Direct access to Bokeh figure
 To access a finer level of customization, you can retrieve the Bokeh figure
@@ -170,7 +170,7 @@ depict.point(x=[1, 2, 3], y=[4, 5, 2], save_path='my_plot.html')
 * #### Jupyter notebook / JupyterLab integration
 Bokeh is nicely integrated in Jupyter notebooks and so does Depict.
 
-![Image_1](images_read_me/notebook_integration.png)
+![Image_1](https://raw.githubusercontent.com/vboulanger/depict/master/images_read_me/notebook_integration.png)
 
 
 # Contributing
