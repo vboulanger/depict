@@ -148,7 +148,7 @@ description = """
 <br>
 HTML code can be added here
 """
-plot_1 = depict.histogram(x=None, y=np.random.rand(10), description=description)
+plot_1 = depict.histogram(np.random.rand(10), description=description)
 ```
 ![Image_1](https://raw.githubusercontent.com/vboulanger/depict/master/images_read_me/hist_example_context.png)
 
