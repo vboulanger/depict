@@ -118,9 +118,9 @@ depict.line(y=['Col 1', 'Col 2'], source_dataframe=df)
 You plots can be rendered in line and column just like a matrix would be.
 ```python
 random_walk = lambda : np.cumsum(np.random.rand(1000) - 0.5)
-plot_1 = depict.line(y=random_walk(), title='Walk 1')
-plot_2 = depict.line(y=random_walk(), title='Walk 2')
-plot_3 = depict.line(y=random_walk(), title='Walk 3')
+plot_1 = depict.line(y=random_walk(), title='Walk 1', show_plot=False)
+plot_2 = depict.line(y=random_walk(), title='Walk 2', show_plot=False)
+plot_3 = depict.line(y=random_walk(), title='Walk 3', show_plot=False)
 
 depict.show([[plot_1, plot_2], [plot_3]])
 ```
