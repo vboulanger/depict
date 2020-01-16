@@ -1,5 +1,11 @@
-# Depict
+<center>
+<img src="logo.png" alt = "drawing" HEIGHT=50/>
+<font size="40">
+&nbsp; Depict
+</font> 
+</center>
 
+<br>
 <a href="https://pypi.org/project/depict/">
 <img src="https://img.shields.io/pypi/v/depict.svg" alt="latest release" />
 </a>
@@ -102,6 +108,15 @@ color = np.sin(x) + np.sin(y)
 depict.point(x=x, y=y, color=color)
 ```
 ![Image_1](https://raw.githubusercontent.com/vboulanger/depict/master/images_read_me/colorbar.png)
+
+
+* #### Smart date handling and parsing
+```python
+x = ['Jan 2018', 'Feb 2018', 'Mar 2018', 'Apr 2018']
+y = [1.1, 2.2, 1.9, 2.8]
+depict.histogram(x=x, y=y)
+```
+![Image_1](https://raw.githubusercontent.com/vboulanger/depict/master/images_read_me/datetime_parsing.png)
 
 * #### Flexibility
 Native compatibility with numpy arrays and pandas dataframes as well as NaN and

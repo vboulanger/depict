@@ -165,19 +165,6 @@ def histogram_base(x, y, source_dataframe, tick_label, label_orientation, width,
             raise ValueError('The number of elements in `legend` is not '
                              'consistent with the data')
 
-    # We pre-process `bar_width`
-    if isinstance(bar_width, numbers.Real):
-        bar_width = [bar_width for _ in y]
-    elif isinstance(bar_width, (list, np.ndarray, tuple)):
-        if len(bar_width) != len(y):
-            raise ValueError('The bar_width argument given is non consistent '
-                             'with the data')
-    elif isinstance(bar_width, str) and (bar_width.lower() == 'auto'):
-        if len(x) == 1:
-            bar_width = [1 for _ in y]
-        else:
-            bar_width = [np.min(np.abs(np.diff(sorted(x)))) * 0.8 for _ in y]
-
     # We pre-process `alpha`
     if isinstance(alpha, numbers.Real):
         alpha = [alpha for _ in y]
@@ -223,6 +210,27 @@ def histogram_base(x, y, source_dataframe, tick_label, label_orientation, width,
         y_axis_type = 'datetime'
         y = pd.to_datetime(y)
 
+    # We pre-process `bar_width`
+    if isinstance(bar_width, numbers.Real):
+        bar_width = [bar_width for _ in y]
+    elif isinstance(bar_width, (list, np.ndarray, tuple)):
+        if len(bar_width) != len(y):
+            raise ValueError(
+                'The bar_width argument given is non consistent '
+                'with the data')
+    elif isinstance(bar_width, str) and (bar_width.lower() == 'auto'):
+        if len(x) == 1:
+            bar_width = [1 for _ in y]
+        else:
+            bar_width = [np.min(np.abs(np.diff(sorted(x)))) * 0.8 for _ in
+                         y]
+    else:
+        try:
+            bar_width_td = pd.to_timedelta(bar_width)
+            bar_width = [bar_width_td for _ in y]
+        except ValueError:
+            raise ValueError('Error in the `bar_width` argument')
+
     # We pre-process `tick_label`
     def _format_x_val(x_val):
         if int(x_val) == x_val:
@@ -267,15 +275,23 @@ def histogram_base(x, y, source_dataframe, tick_label, label_orientation, width,
 
             def step(f, x_c=x_i, y_copy=y_i, col_c=col_i, leg_c=leg_i,
                      bw_c=bw_i, a_c=a_i):
-                left = np.array(x_c) - (np.array(bw_c) / 2)
-                right = np.array(x_c) + (np.array(bw_c) / 2)
+                left = [x_c_i - (bw_c_i / 2) for x_c_i, bw_c_i in
+                        zip(x_c, bw_c)]
+                right = [x_c_i + (bw_c_i / 2) for x_c_i, bw_c_i in
+                         zip(x_c, bw_c)]
                 f.quad(bottom=0, top=y_copy, left=left, right=right,
                        color=col_c, legend_label=leg_c, alpha=a_c)
         else:
             def step(f, x_c=x_i, y_copy=y_i, col_c=col_i,
                      bw_c=bw_i, a_c=a_i):
-                left = np.array(x_c) - (np.array(bw_c) / 2)
-                right = np.array(x_c) + (np.array(bw_c) / 2)
+                # Done sequencially because because in vectorial we cannot
+                # substract numpy.int64 and pandas timedeltas
+                left = [x_c_i - (bw_c_i / 2) for x_c_i, bw_c_i in
+                        zip(x_c, bw_c)]
+                right = [x_c_i + (bw_c_i / 2) for x_c_i, bw_c_i in
+                        zip(x_c, bw_c)]
+                # left = np.array(x_c) - (np.array(bw_c) / 2)
+                # right = np.array(x_c) + (np.array(bw_c) / 2)
                 f.quad(bottom=0, top=y_copy, left=left, right=right,
                        color=col_c, alpha=a_c)
         steps.append(step)
