@@ -1,5 +1,5 @@
 <center>
-<img src="logo_and_name.png" alt = "drawing" WIDTH=500/>
+<img src="https://raw.githubusercontent.com/vboulanger/depict/master/logo_and_name.png" alt = "drawing" WIDTH=500/>
 </center>
 
 
