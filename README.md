@@ -1,9 +1,7 @@
 <center>
-<img src="https://raw.githubusercontent.com/vboulanger/depict/master/logo.png" alt = "drawing" HEIGHT=50/>
-<font size="40">
-&nbsp; Depict
-</font> 
+<img src="logo_and_name.png" alt = "drawing" WIDTH=500/>
 </center>
+
 
 <br>
 <a href="https://pypi.org/project/depict/">
@@ -14,6 +12,9 @@
 </a>
 <a href="https://pypi.org/project/depict/">
 <img src="https://img.shields.io/pypi/l/depict.svg" alt="license" />
+</a>
+<a href="https://pepy.tech/project/depict">
+<img src="https://pepy.tech/badge/depict" alt="download" />
 </a>
 
 **Business grade plots in seconds.**
