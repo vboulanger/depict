@@ -1,5 +1,5 @@
 <center>
-<img src="logo.png" alt = "drawing" HEIGHT=50/>
+<img src="https://raw.githubusercontent.com/vboulanger/depict/master/images_read_me/logo.png" alt = "drawing" HEIGHT=50/>
 <font size="40">
 &nbsp; Depict
 </font> 
