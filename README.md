@@ -1,6 +1,4 @@
-<center>
 <img src="https://raw.githubusercontent.com/vboulanger/depict/master/logo_and_name.png" alt = "drawing" WIDTH=500/>
-</center>
 
 
 <br>
@@ -17,7 +15,7 @@
 <img src="https://pepy.tech/badge/depict" alt="download" />
 </a>
 
-**Business grade plots in seconds.**
+**Business grade visualizations in seconds.**
 
 
 Depict is built on the top of Bokeh. It aims at providing one-line access 
