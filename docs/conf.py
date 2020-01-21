@@ -35,7 +35,7 @@ extensions = [
     'sphinx.ext.napoleon',
 ]
 # autodoc settings
-autodoc_mock_imports = ['bokeh', 'seaborn', 'pandas', 'numpy']
+autodoc_mock_imports = ['numpy', 'bokeh', 'seaborn', 'pandas']
 
 # napoleon settings
 napoleon_google_docstring = True
