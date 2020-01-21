@@ -34,7 +34,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
 ]
-
+# autodoc settings
 autodoc_mock_imports = ['bokeh', 'seaborn', 'pandas']
 
 # napoleon settings
