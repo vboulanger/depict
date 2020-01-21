@@ -24,8 +24,7 @@ setuptools.setup(
     python_requires='>=3.5',
     install_requires=['bokeh>=1.4.0', 'seaborn>=0.9.0', 'pandas>=0.24.2'],
     extras_require={'test': ['pytest', 'pycodestyle'],
-                    'doc': ['Sphinx', 'bokeh>=1.4.0', 'seaborn>=0.9.0',
-                            'pandas>=0.24.2']},
+                    'doc': ['Sphinx']},
     tests_require=['pytest'],
     setup_requires=['pytest-runner'],
 )
