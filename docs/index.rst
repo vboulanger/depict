@@ -19,7 +19,6 @@ create beautiful plots while reducing the graph-tweaking time.
    :maxdepth: 2
    :caption: Contents:
 
-   line
 
 
 Indices and tables
