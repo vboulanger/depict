@@ -6,6 +6,10 @@
 <img src="https://travis-ci.com/vboulanger/depict.svg?branch=master" alt="CI" />
 </a>
 
+<a href='https://depict.readthedocs.io/en/latest/?badge=latest'>
+<img src='https://readthedocs.org/projects/depict/badge/?version=latest' alt='Documentation Status' />
+</a>
+
 <a href="https://pypi.org/project/depict/">
 <img src="https://img.shields.io/pypi/v/depict.svg" alt="latest release" />
 </a>
@@ -71,6 +75,10 @@ interact with depict figure and get access to a fine level of granularity.
   cd depict  
   sudo python setup.py install
   ```
+
+# Documentation
+The documentation can be found at: [https://depict.readthedocs.io](https://depict.readthedocs.io).
+
 
 # Get started
 ### Hello world

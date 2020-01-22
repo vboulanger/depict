@@ -9,10 +9,9 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('..'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath('..'))
 
 
 # -- Project information -----------------------------------------------------
@@ -30,17 +29,14 @@ release = '0.1.5'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-# extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon']
-extensions = []
-# autodoc settings
-# autodoc_mock_imports = ['numpy', 'bokeh', 'seaborn', 'pandas']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon']
+autodoc_mock_imports = ['numpy', 'bokeh', 'seaborn', 'pandas']
 
 # napoleon settings
-# napoleon_google_docstring = True
-# napoleon_numpy_docstring = False
+napoleon_google_docstring = True
 
 # Add any paths that contain templates here, relative to this directory.
-# templates_path = ['_templates']
+templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
@@ -54,21 +50,23 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 #
 html_theme = 'alabaster'
 
-# html_theme_options = {
-#     'logo': 'https://raw.githubusercontent.com/vboulanger/depict/master/logo.png',
-#     'github_repo': 'vboulanger/depict',
-#     'github_button': 'true',
-#     'link': '#aa560c',
-#     # 'show_powered_by': 'false',
-#     # "relbarbgcolor": "#333",
-#     # "sidebarlinkcolor": "#e15617",
-#     # "sidebarbgcolor": "#000",
-#     # "sidebartextcolor": "#333",
-#     # "footerbgcolor": "#111",
-#     # "linkcolor": "#aa560c",
-#     # "headtextcolor": "#643200",
-#     # "codebgcolor": "#f5efe7",
-# }
+html_theme_options = {
+    'logo': 'logo.png',
+    # 'github_repo': 'vboulanger/depict',
+    'github_user': 'vboulanger',
+    'github_repo': 'depict',
+    'github_button': 'true',
+    # 'link': '#aa560c',
+    # 'show_powered_by': 'false',
+    # "relbarbgcolor": "#333",
+    # "sidebarlinkcolor": "#e15617",
+    # "sidebarbgcolor": "#000",
+    # "sidebartextcolor": "#333",
+    # "footerbgcolor": "#111",
+    # "linkcolor": "#aa560c",
+    # "headtextcolor": "#643200",
+    # "codebgcolor": "#f5efe7",
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
