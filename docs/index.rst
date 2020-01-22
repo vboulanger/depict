@@ -16,6 +16,7 @@ create beautiful plots while reducing the graph-tweaking time.
 
 Doc!
 
+
 .. toctree::
    :maxdepth: 2
 

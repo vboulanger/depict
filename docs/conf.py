@@ -39,20 +39,10 @@ autodoc_mock_imports = ['numpy', 'bokeh', 'seaborn', 'pandas']
 
 # napoleon settings
 napoleon_google_docstring = True
-napoleon_numpy_docstring = True
-napoleon_include_init_with_doc = True
-napoleon_include_private_with_doc = True
-napoleon_include_special_with_doc = True
-napoleon_use_admonition_for_examples = True
-napoleon_use_admonition_for_notes = True
-napoleon_use_admonition_for_references = True
-napoleon_use_ivar = True
-napoleon_use_param = True
-napoleon_use_rtype = True
+napoleon_numpy_docstring = False
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
-
+# templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
