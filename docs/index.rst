@@ -14,12 +14,11 @@ sharable.
 It is made for data-{scientist, analyst, engineer, lead, etc} seeking to
 create beautiful plots while reducing the graph-tweaking time.
 
+Doc!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
-   line
 
 Indices and tables
 ==================
