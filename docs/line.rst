@@ -1,5 +1,5 @@
 One dimensional lines
 ---------------------
 
-.. autofunction:: depict.line
+This explains the behavior of the ``line`` function.
 
