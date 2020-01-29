@@ -18,7 +18,9 @@ create beautiful plots while reducing the graph-tweaking time.
    :maxdepth: 2
 
    line
+
    point
+
    histogram
 
 Indices and tables
