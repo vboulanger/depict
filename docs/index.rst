@@ -17,8 +17,8 @@ create beautiful plots while reducing the graph-tweaking time.
 .. toctree::
    :maxdepth: 2
 
-   line
    point
+   line
    histogram
 
 .. autosummary::
