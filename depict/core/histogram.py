@@ -153,6 +153,26 @@ def histogram_base(x, y, source_dataframe, tick_label, label_orientation,
                     color_bar = ColorBar(color_mapper=color_mapper,
                                          location=(0, 0))
                     _color_bar_made = True
+        elif isinstance(color, (list, np.ndarray, tuple)):
+            if len(color) != len(y):
+                # TODO: Improve error message
+                raise ValueError('Number of elements in `color` invalid')
+
+            if isinstance(colorbar_type, str) and (
+                    colorbar_type.lower() == 'continuous'):
+                error_msg = (
+                    'With such elements in `color`, the colorbar cannot be '
+                    'continuous because it can be transformed into numbers. '
+                    'Set colorbar to either `auto` or `categorical`'
+                )
+                raise ValueError(error_msg)
+            if isinstance(legend, str) and (legend.lower() == 'auto'):
+                legend = [str(c) for c in color]
+            color_unique = sorted(list(np.unique(color)))
+            nb_color_needed = len(color_unique)
+            palette_colors = palette_from_name_to_function[
+                session.palette_name](nb_color_needed)
+            color = [palette_colors[color_unique.index(c)] for c in color]
 
     color = [format_color(c) for c in color]
 
