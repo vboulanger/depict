@@ -17,12 +17,10 @@ create beautiful plots while reducing the graph-tweaking time.
 .. toctree::
    :maxdepth: 2
 
+   gallery.rst
    line.rst
    point.rst
    histogram.rst
-
-.. autosummary::
-   :toctree: generated/
 
 Indices and tables
 ==================

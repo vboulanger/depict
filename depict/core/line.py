@@ -168,7 +168,7 @@ def line_base(y, x, source_dataframe, width, height, description, title,
                 colorbar_type = colorbar_type.lower()
 
             if colorbar_type == 'categorical':
-                if legend.lower() == 'auto':
+                if isinstance(legend, str) and (legend.lower() == 'auto'):
                     legend = [str(c) for c in color]
                 color_unique = sorted(list(np.unique(color)))
                 nb_color_needed = len(color_unique)
