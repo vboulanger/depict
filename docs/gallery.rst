@@ -57,13 +57,15 @@ More about the maths here: https://www.youtube.com/watch?v=EK32jo7i5LQ
 
     normal = np.round(np.random.normal(size=600, scale=7))
     counter = Counter(normal)
+    rg = np.arange(normal.min(), normal.max() + 1)
 
-    y = np.concatenate([range(counter[i]) for i in np.arange(normal.min(), normal.max() + 1)])
-    x = np.concatenate([list(repeat(i, counter[i])) for i in np.arange(normal.min(), normal.max() + 1)])
+    y = np.concatenate([range(counter[i]) for i in rg])
+    x = np.concatenate([list(repeat(i, counter[i])) for i in rg])
     p_point = depict.point(x, y, show_plot=False)
 
     x = np.linspace(normal.min(), normal.max(), num=1000)
     y = scipy.stats.norm.pdf(x, loc=0, scale=7) * 600
-    p_line = depict.line(x=x, y=y, color='Orange', style='-', line_width=3, show_plot=False)
+    p_line = depict.line(x=x, y=y, color='Orange', style='-',
+                         line_width=3, show_plot=False)
 
     depict.show([[p_point, p_line], p_point + p_line])

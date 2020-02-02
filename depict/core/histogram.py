@@ -467,8 +467,8 @@ def _update_histogram_default_args(histogram_base, session):
                 columns / keys will be the legend). If array-like, the length
                 of `legend` must match with the number of bars drawn
 
-            bar_width ('auto', Number, timedelta, (array-like of Number or
-            timedelta)):
+            bar_width ('auto', Number, timedelta, array-like of Number or
+            timedelta):
                 The width of the bars (the total width).
                 If 'auto': the bar_width will be defined smartly considering
                 the minimum distance between 2 bars so that they do not

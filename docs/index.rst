@@ -17,6 +17,7 @@ create beautiful plots while reducing the graph-tweaking time.
 .. toctree::
    :maxdepth: 2
 
+   philosophy.rst
    gallery.rst
    line.rst
    point.rst
