@@ -69,11 +69,11 @@ web-based reports, etc. I’ve been seduced by this versatility.
 
 .. image:: _static/cac40_bokeh.png
 
-The graph is looks clean while the API is fairly concise and simple.
+The graph looks clean while the API is fairly concise and simple.
 However, I thought that I would be ready to limit the possibilities with
 respect to the graph customization, in order to have an even simpler API. For
 example, the fact that we have to create a figure, add elements to it (line,
-points, text, etc) and then, in a third step, display it, enable us to combine
+points, text, etc) and then, in a third step, display it, enables us to combine
 graphs together, or display several elements on the same graph. But most of the
 time, I want to create a figure, add elements of the same type, and obviously
 display it. I wanted to design an API centered on simple visualization
@@ -114,7 +114,7 @@ verbosity level in fact.
 Depict is still very young. It already contains: several high-level features
 (sum of graphs, automatic colorbars, etc), three types of graph (line, point,
 histogram), a continuous integration framework based on travis, a documentation
-based on Sphinx and hosted on readthedoc.
+based on Sphinx and hosted on readthedocs.
 
 During the next months, it will include: more types of graphs
 (depict.distribution (1 dimensional distributions with kde estimation),
