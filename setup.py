@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="depict",
-    version="0.1.6",
+    version="1.0",
     author="Victor Boulanger",
     author_email="vb@live.fr",
     description="Business grade visualizations in seconds",
@@ -17,7 +17,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Natural Language :: English",
         "Topic :: Scientific/Engineering :: Visualization",
     ],
