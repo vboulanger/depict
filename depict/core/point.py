@@ -1,3 +1,4 @@
+from .legend import place_legend_without_overlap
 from .plot import Plot
 from .tools import show_base, save_base, is_color, format_color, is_iterable
 from ..tools.color_palettes import palette_from_name_to_function
@@ -21,6 +22,9 @@ def point_base(x, y, source_dataframe, width, height, description, title,
         x (array-like): X-axis data
         y (array-like): y-axis data
     """
+    user_defined_x_range = x_range is not None
+    user_defined_y_range = y_range is not None
+
     # We convert (source, x and y) into only x and y. x and y will be processed
     # normally. source will not be used any more.
     if source_dataframe is not None:
@@ -255,6 +259,17 @@ def point_base(x, y, source_dataframe, width, height, description, title,
         def make_legend_interactive(f):
             f.legend.click_policy = "hide"
         steps.append(make_legend_interactive)
+
+        def place_legend(f, x_data=x, y_data=y,
+                         x_range_set=user_defined_x_range,
+                         y_range_set=user_defined_y_range):
+            place_legend_without_overlap(
+                fig=f, x_arrays=x_data, y_arrays=y_data,
+                user_defined_x_range=x_range_set,
+                user_defined_y_range=y_range_set,
+            )
+
+        steps.append(place_legend)
 
     def _make_fig():
         fig = figure(width=width, height=height, title=title,
